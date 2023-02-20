@@ -1,0 +1,7 @@
+command
+streamon
+delay 5
+takeoff
+delay 5
+streamoff
+land
