@@ -23,6 +23,7 @@ import traceback
 import datetime
 from timertask import TimerTask
 from bytebuffer import ByteBuffer
+import cv2 as cv
 
 class Tello:
 
@@ -424,6 +425,10 @@ class Tello:
         
         data = bytearray(4096)
         fileVideo = open('video.h264', 'wb')
+
+        cv.imshow('before', fileVideo)
+        cv.waitKey(1)
+        
         isSPSRcvd = False
         
         while not stop_event.is_set():
@@ -440,7 +445,7 @@ class Tello:
                     nal_type = data[6] & 0x1f
                     #print('NAL=', nal_type
                     if nal_type == 7:
-                        isSPSRcvd = True;
+                        isSPSRcvd = True
 
                 # drop 2 bytes
                 if isSPSRcvd:
@@ -448,7 +453,12 @@ class Tello:
 
         sockVideo.close()
         fileVideo.close()
-        #print('_threadVideoRX terminated !!!'
+
+        cv.imshow('after', fileVideo)
+        cv.waitKey(1)
+
+
+        #print('_threadVideoRX terminated !!!')
 
 
 ###############################################################################
