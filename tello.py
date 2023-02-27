@@ -426,9 +426,6 @@ class Tello:
         data = bytearray(4096)
         fileVideo = open('video.h264', 'wb')
 
-        cv.imshow('before', fileVideo)
-        cv.waitKey(1)
-        
         isSPSRcvd = False
         
         while not stop_event.is_set():
@@ -454,8 +451,6 @@ class Tello:
         sockVideo.close()
         fileVideo.close()
 
-        cv.imshow('after', fileVideo)
-        cv.waitKey(1)
 
 
         #print('_threadVideoRX terminated !!!')
