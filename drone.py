@@ -8,7 +8,7 @@ import threading
 import time
 import traceback
 
-from tellopy import Tello
+import tellopy
 
 
 def handler(event, sender, data, **args):
@@ -41,9 +41,12 @@ def draw_text(image, text, row):
         pos = (left_mergin, height + font_size * row + 1)
     else:
         pos = (left_mergin, font_size * (row + 1))
+    
+    # Draw text on image
+    '''
     cv2.putText(image, text, pos, font, font_scale, bg_color, 6)
     cv2.putText(image, text, pos, font, font_scale, font_color, 1)
-
+    '''
 
 def recv_thread(drone):
     global run_recv_thread
@@ -57,20 +60,25 @@ def recv_thread(drone):
         # skip first 300 frames
         frame_skip = 300
         while True:
-            for frame in container.decode(video=1):
+            for frame in container.decode(video=0):
+                print(frame)
                 if 0 < frame_skip:
                     frame_skip = frame_skip - 1
                     continue
                 start_time = time.time()
-                image = cv2.cvtColor(numpy.array(frame.to_image()), cv2.COLOR_RGB2BGR)
-
+                image = cv2.rotate(cv2.cvtColor(numpy.array(frame.to_image()), cv2.COLOR_RGB2BGR), cv2.ROTATE_180)
+                
+                # Draw text on image
+                '''
                 if flight_data:
                     draw_text(image, 'Drone ' + str(flight_data), 0)
                 if log_data:
                     draw_text(image, 'MVO: ' + str(log_data.mvo), -3)
                     draw_text(image, ('IMU: ' + str(log_data.imu))[0:52], -2)
                     draw_text(image, '     ' + ('IMU: ' + str(log_data.imu))[52:], -1)
+                '''
                 new_image = image
+                print("New image created")
                 if frame.time_base < 1.0/60:
                     time_base = 1.0/60
                 else:
@@ -87,7 +95,7 @@ def main():
     global run_recv_thread
     current_image = None
 
-    drone = Tello()
+    drone = tellopy.Tello()
     drone.connect()
     drone.wait_for_connection(60)
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
@@ -116,11 +124,12 @@ def main():
     exit(1)
 
 
-prev_flight_data = None
-run_recv_thread = True
-new_image = None
-flight_data = None
-log_data = None
+
 
 if __name__ == "__main__":
+    prev_flight_data = None
+    run_recv_thread = True
+    new_image = None
+    flight_data = None
+    log_data = None
     main()
