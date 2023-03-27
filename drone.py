@@ -212,7 +212,7 @@ def homograph(p, p1):
 def contour_generator(frame):
     test_img1 = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     test_blur = cv.GaussianBlur(test_img1, (5, 5), 0)
-    edge = cv.Canny(test_blur, 75, 200)
+    edge = cv.Canny(test_blur, 150, 255)
     edge1 = copy.copy(edge)
     contour_list = list()
 
@@ -239,7 +239,7 @@ def contour_generator(frame):
             new_contour_list.append(contour)
     final_contour_list = list()
     for element in new_contour_list:
-        if cv.contourArea(element) < 2500:
+        if cv.contourArea(element) < 15000:
             final_contour_list.append(element)
 
     return final_contour_list
