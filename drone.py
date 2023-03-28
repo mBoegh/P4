@@ -8,6 +8,7 @@ import traceback
 from matplotlib import pyplot as plt
 import copy
 import tellopy
+import keyboard as kb
 
 ################################################################
 #################    VIDEO FEED FUNCTIONS   ####################
@@ -199,7 +200,7 @@ def contour_generator(frame):
             new_contour_list.append(contour)
     final_contour_list = list()
     for element in new_contour_list:
-        if cv.contourArea(element) < 15000:
+        if cv.contourArea(element) < 20000:
             final_contour_list.append(element)
 
     return final_contour_list
@@ -252,7 +253,7 @@ def image_process(frame, p1):
             distance_to_contour.append(euclidian_distance)
         # Computing the mean euclidian distance
         mean_distance_to_contour = np.mean(distance_to_contour)
-        print(mean_distance_to_contour)
+        #print(mean_distance_to_contour)
         
         augmented_image_list = list()
         for i in range(len(final_contour_list)):
@@ -265,10 +266,31 @@ def image_process(frame, p1):
             H_matrix = homograph(p1, order(c_rez))
 
             # H_matrix = homo(p1,order(c))
-            tag = cv.warpPerspective(frame, H_matrix, (200, 200))
+            tag = cv.cvtColor(cv.warpPerspective(frame, H_matrix, (200, 200)), cv.COLOR_BGR2GRAY)
+                        
+            height, width = tag.shape[:2]
 
-            cv.imshow("Tello", frame)
-            cv.imshow("AR TAG", tag)
+            # Calculate threshold value
+            threshold_val_white = 200  # low limit with high being 255
+            threshold_val_black = 55  # high limit with low being 0
+
+            # Apply thresholding
+            ret, thresh_white = cv.threshold(tag, threshold_val_white, 255, cv.THRESH_BINARY)
+            ret, thresh_black = cv.threshold(tag, 0, threshold_val_black, cv.THRESH_BINARY)
+
+            # Count number of pixels below threshold
+            count_white = cv.countNonZero(thresh_white)
+            count_black = cv.countNonZero(thresh_black)
+
+            # Calculate percentage of pixels below threshold
+            white_percentage_below_threshold = (count_white / (height * width)) * 100
+            black_percentage_below_threshold = (count_black / (height * width)) * 100
+
+            if show_drone_video == True:
+                cv.imshow("Tello", frame)
+            
+            if show_detected_ar_tag == True and white_percentage_below_threshold <= 25 and black_percentage_below_threshold >= 75:
+                cv.imshow("AR TAG", tag)
 
             tag1 = cv.cvtColor(tag, cv.COLOR_BGR2GRAY)
             decoded, location = id_decode(tag1)
@@ -282,37 +304,52 @@ def image_process(frame, p1):
                 if not np.array_equal(augmented_image_overlap, empty):
                     augmented_image_list.append(augmented_image_overlap.copy())
                     # print(augmented_image_overlap.shape)
+        
+        if show_augmented_image_on_drone_video == True:
+            mask = np.full(frame.shape, 0, dtype='uint8')
+            if augmented_image_list != []:
+                for augmented_image in augmented_image_list:
+                    temp = cv.add(mask, augmented_image.copy())
+                    mask = temp
 
-        mask = np.full(frame.shape, 0, dtype='uint8')
-        if augmented_image_list != []:
-            for augmented_image in augmented_image_list:
-                temp = cv.add(mask, augmented_image.copy())
-                mask = temp
+                augmented_image_gray = cv.cvtColor(mask, cv.COLOR_BGR2GRAY)
+                r, augmented_image_bin = cv.threshold(augmented_image_gray, 10, 255, cv.THRESH_BINARY)
 
-            augmented_image_gray = cv.cvtColor(mask, cv.COLOR_BGR2GRAY)
-            r, augmented_image_bin = cv.threshold(augmented_image_gray, 10, 255, cv.THRESH_BINARY)
+                mask_inv = cv.bitwise_not(augmented_image_bin)
 
-            mask_inv = cv.bitwise_not(augmented_image_bin)
+                mask_3d = frame.copy()
+                mask_3d[:, :, 0] = mask_inv
+                mask_3d[:, :, 1] = mask_inv
+                mask_3d[:, :, 2] = mask_inv
+                img_masked = cv.bitwise_and(frame, mask_3d)
+                final_image = cv.add(img_masked, mask)
 
-            mask_3d = frame.copy()
-            mask_3d[:, :, 0] = mask_inv
-            mask_3d[:, :, 1] = mask_inv
-            mask_3d[:, :, 2] = mask_inv
-            img_masked = cv.bitwise_and(frame, mask_3d)
-            final_image = cv.add(img_masked, mask)
+                cv.imshow('Tello', final_image)
+                cv.waitKey(1)
 
-            cv.imshow('Tello', final_image)
+                if cv.waitKey(1) & 0xff == 27:
+                    cv.destroyAllWindows()
+    except:
+        if show_drone_video == True:
+            cv.imshow('Tello', frame)
             cv.waitKey(1)
 
-            if cv.waitKey(1) & 0xff == 27:
-                cv.destroyAllWindows()
-    except:
-        cv.imshow('Tello', frame)
-        cv.waitKey(1)
+###########################################################
+#################    MAIN  &  SETTINGS ####################
+###########################################################
 
-################################################
-#################    MAIN   ####################
-################################################
+## SETTINGS ##
+
+# video settings
+show_drone_video = True
+show_detected_ar_tag = True
+show_augmented_image_on_drone_video = True
+
+# plot settings
+xy_plot_setting = True
+
+
+## MAIN ##
 
 def main():
     global new_image
@@ -325,15 +362,61 @@ def main():
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
     drone.subscribe(drone.EVENT_LOG_DATA, handler)
     threading.Thread(target=recv_thread, args=[drone]).start()
+    
+    if xy_plot_setting == True:
+        fig, plot = plt.subplots()
+        plot_points_x = []
+        plot_points_y = []
+        prev_plot_points_x = []
+        prev_plot_points_y = [] 
+        plot_color = ["green", "red", "yellow", "magenta", "pink", "cyan"]
+        key_pressed = 0
 
+    num = 0
     try:
         while 1:
             time.sleep(0.01)
+            if num % 10 == 0:
+                posx = drone.log_data.mvo.pos_x
+                posy = drone.log_data.mvo.pos_y
+                plot_points_x.append(posx)
+                plot_points_y.append(posy)
+            num += 1
+
             if current_image is not new_image:
                 cv.resize(new_image, (0, 0), fx=0.5, fy=0.5)
                 image_process(new_image, p1)
                 current_image = new_image
-            
+
+            if xy_plot_setting == True:
+                # Upon pressing the "p" button on the keyboard the current data is plotted in the following process
+                if kb.is_pressed("p"):
+                    if len(plot_points_x) > 0 and len(plot_points_y) > 0 and len(plot_points_x) == len(plot_points_y):
+                        
+                        # plot current data as blue
+                        for i in range(len(plot_points_x)):
+                            plot.scatter(plot_points_x[i], plot_points_y[i], c="blue")
+                        
+                        # plot previous data as a color corresponding to how many iterations ago the data was collected with newest being green and oldest being cyan (see the plot_color array)
+                        if len(prev_plot_points_x) > 0 and len(prev_plot_points_y) > 0 and len(prev_plot_points_x) == len(prev_plot_points_y):
+                            for i in range(len(prev_plot_points_x)):
+                                plot.scatter(prev_plot_points_x[i], prev_plot_points_y[i], c=plot_color[i])
+                        
+                        # make plot centered around x=0 and y=0
+                        x_abs_max = abs(max(plot.get_xlim(), key=abs))
+                        y_abs_max = abs(max(plot.get_ylim(), key=abs))
+                        plot.set_xlim(xmin=-x_abs_max, xmax=x_abs_max)
+                        plot.set_ylim(ymin=-y_abs_max, ymax=y_abs_max)
+                        
+                        # show plot
+                        plt.show()
+
+                        # save current data for show in next plot
+                        prev_plot_points_x.append([plot_points_x])
+                        prev_plot_points_y.append([plot_points_y])
+                        
+                        key_pressed += 1
+
     except KeyboardInterrupt as e:
         print(e)
     except Exception as e:
