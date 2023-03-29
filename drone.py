@@ -334,9 +334,58 @@ def image_process(frame, p1):
             cv.imshow('Tello', frame)
             cv.waitKey(1)
 
-###########################################################
-#################    MAIN  &  SETTINGS ####################
-###########################################################
+###############################################################
+#################    MOVEMENT FUNCTIONS    ####################
+###############################################################
+
+def drone_movement(drone):
+    global remote_control
+    global speed_remote_control
+
+    drone_flying = False
+    
+    while True:
+        if kb.is_pressed("q"):
+            drone.land()
+
+        if drone_flying == False and kb.is_pressed("r"):
+            drone.takeoff()
+            drone_flying = True
+        
+        if drone_flying == True and kb.is_pressed("l"):
+            drone.land()
+            drone_flying = False
+
+        if remote_control == True and drone_flying == True:
+             ## WASD ##
+            while kb.is_pressed("W"):
+                drone.forward(speed_remote_control)
+
+            while kb.is_pressed("S"):
+                drone.backward(speed_remote_control)
+            
+            while kb.is_pressed("A"):
+                drone.left(speed_remote_control)
+
+            while kb.is_pressed("D"):
+                drone.right(speed_remote_control)
+
+            ## ARROWS ##
+            while kb.is_pressed("UP"):
+                drone.up(speed_remote_control)
+
+            while kb.is_pressed("DOWN"):
+                drone.down(speed_remote_control)
+
+            while kb.is_pressed("LEFT"):
+                drone.counter_clockwise(speed_remote_control)
+
+            while kb.is_pressed("RIGHT"):
+                drone.clockwise(speed_remote_control)
+
+##############################################################
+#################    MAIN  &  SETTINGS    ####################
+##############################################################
 
 ## SETTINGS ##
 
@@ -346,7 +395,13 @@ show_detected_ar_tag = True
 show_augmented_image_on_drone_video = True
 
 # plot settings
-xy_plot_setting = True
+xy_plot_setting = False  # Unfininshed
+
+# Drone settings
+movement_enabled = True
+
+remote_control = True
+speed_remote_control = 20
 
 
 ## MAIN ##
@@ -362,7 +417,7 @@ def main():
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
     drone.subscribe(drone.EVENT_LOG_DATA, handler)
     threading.Thread(target=recv_thread, args=[drone]).start()
-    
+
     if xy_plot_setting == True:
         fig, plot = plt.subplots()
         plot_points_x = []
@@ -376,12 +431,6 @@ def main():
     try:
         while 1:
             time.sleep(0.01)
-            if num % 10 == 0:
-                posx = drone.log_data.mvo.pos_x
-                posy = drone.log_data.mvo.pos_y
-                plot_points_x.append(posx)
-                plot_points_y.append(posy)
-            num += 1
 
             if current_image is not new_image:
                 cv.resize(new_image, (0, 0), fx=0.5, fy=0.5)
@@ -389,6 +438,13 @@ def main():
                 current_image = new_image
 
             if xy_plot_setting == True:
+                if num % 10 == 0:
+                    posx = drone.log_data.mvo.pos_x
+                    posy = drone.log_data.mvo.pos_y
+                    plot_points_x.append(posx)
+                    plot_points_y.append(posy)
+                num += 1
+                
                 # Upon pressing the "p" button on the keyboard the current data is plotted in the following process
                 if kb.is_pressed("p"):
                     if len(plot_points_x) > 0 and len(plot_points_y) > 0 and len(plot_points_x) == len(plot_points_y):
@@ -416,6 +472,9 @@ def main():
                         prev_plot_points_y.append([plot_points_y])
                         
                         key_pressed += 1
+
+            if movement_enabled == True:
+                threading.Thread(target=drone_movement, args=[drone]).start()
 
     except KeyboardInterrupt as e:
         print(e)
