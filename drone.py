@@ -360,28 +360,46 @@ def drone_movement(drone):
              ## WASD ##
             while kb.is_pressed("W"):
                 drone.set_pitch(1)
+            else:
+                drone.set_pitch(0)
 
             while kb.is_pressed("S"):
                 drone.set_pitch(-1)
-            
+            else:
+                drone.set_pitch(0)
+
             while kb.is_pressed("A"):
                 drone.set_roll(-1)
+            else:
+                drone.set_roll(0)
 
             while kb.is_pressed("D"):
                 drone.set_roll(1)
+            else:
+                drone.set_roll(0)
+
 
             ## ARROWS ##
             while kb.is_pressed("UP"):
-                drone.up(speed_remote_control)
+                drone.set_throttle(1)
+            else:
+                drone.set_throttle(0)
 
             while kb.is_pressed("DOWN"):
-                drone.down(speed_remote_control)
+                drone.set_throttle(-1)
+            else:
+                drone.set_throttle(0)
 
             while kb.is_pressed("LEFT"):
                 drone.set_yaw(-1)
+            else:
+                drone.set_yaw(0)
 
             while kb.is_pressed("RIGHT"):
                 drone.set_yaw(1)
+            else:
+                drone.set_yaw(0)
+
 
 ##############################################################
 #################    MAIN  &  SETTINGS    ####################
@@ -401,7 +419,7 @@ xy_plot_setting = False  # Unfininshed
 movement_enabled = True
 
 remote_control = True
-speed_remote_control = 20
+speed_remote_control = 50
 
 
 ## MAIN ##
@@ -417,6 +435,7 @@ def main():
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
     drone.subscribe(drone.EVENT_LOG_DATA, handler)
     threading.Thread(target=recv_thread, args=[drone]).start()
+
     if xy_plot_setting == True:
         fig, plot = plt.subplots()
         plot_points_x = []
