@@ -359,16 +359,16 @@ def drone_movement(drone):
         if remote_control == True and drone_flying == True:
              ## WASD ##
             while kb.is_pressed("W"):
-                drone.forward(speed_remote_control)
+                drone.set_pitch(1)
 
             while kb.is_pressed("S"):
-                drone.backward(speed_remote_control)
+                drone.set_pitch(-1)
             
             while kb.is_pressed("A"):
-                drone.left(speed_remote_control)
+                drone.set_roll(-1)
 
             while kb.is_pressed("D"):
-                drone.right(speed_remote_control)
+                drone.set_roll(1)
 
             ## ARROWS ##
             while kb.is_pressed("UP"):
@@ -378,10 +378,10 @@ def drone_movement(drone):
                 drone.down(speed_remote_control)
 
             while kb.is_pressed("LEFT"):
-                drone.counter_clockwise(speed_remote_control)
+                drone.set_yaw(-1)
 
             while kb.is_pressed("RIGHT"):
-                drone.clockwise(speed_remote_control)
+                drone.set_yaw(1)
 
 ##############################################################
 #################    MAIN  &  SETTINGS    ####################
@@ -417,7 +417,6 @@ def main():
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
     drone.subscribe(drone.EVENT_LOG_DATA, handler)
     threading.Thread(target=recv_thread, args=[drone]).start()
-
     if xy_plot_setting == True:
         fig, plot = plt.subplots()
         plot_points_x = []
