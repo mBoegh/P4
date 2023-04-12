@@ -381,62 +381,46 @@ def drone_movement(drone):
 
         if remote_control == True and drone_flying == True:
              ## WASD ##
-            if kb.is_pressed("W"):
+            if kb.on_press_key("W"):
                 drone.set_pitch(1)
-                while kb.is_pressed("W"):
-                    redundant = True
-            else:
+            elif kb.on_release_key("W"):
                 drone.set_pitch(0)
 
-            if kb.is_pressed("S"):
+            if kb.on_press_key("S"):
                 drone.set_pitch(-1)
-                while kb.is_pressed("S"):
-                    redundant = True
-            else:
+            elif kb.on_release_key("S"):
                 drone.set_pitch(0)
 
-            if kb.is_pressed("A"):
+            if kb.on_press_key("A"):
                 drone.set_roll(-1)
-                while kb.is_pressed("A"):
-                    redundant = True
-            else:
+            elif kb.on_release_key("A"):
                 drone.set_roll(0)
 
-            if kb.is_pressed("D"):
+            if kb.on_press_key("D"):
                 drone.set_roll(1)
-                while kb.is_pressed("D"):
-                    redundant = True
-            else:
+            elif kb.on_release_key("D"):
                 drone.set_roll(0)
 
 
             ## ARROWS ##
-            if kb.is_pressed("UP"):
+            if kb.on_press_key("UP"):
                 drone.set_throttle(1)
-                while kb.is_pressed("UP"):
-                    redundant = True
-            else:
+            elif kb.on_release_key("UP"):
                 drone.set_throttle(0)
 
-            if kb.is_pressed("DOWN"):
+            if kb.on_press_key("DOWN"):
                 drone.set_throttle(-1)
-                while kb.is_pressed("DOWN"):
-                    redundant = True
-            else:
+            elif kb.on_release_key("DOWN"):
                 drone.set_throttle(0)
 
-            if kb.is_pressed("LEFT"):
+            if kb.on_press_key("LEFT"):
                 drone.set_yaw(-1)
-                while kb.is_pressed("LEFT"):
-                    redundant = True
-            else:
+            elif kb.on_release_key("LEFT"):
                 drone.set_yaw(0)
 
-            if kb.is_pressed("RIGHT"):
+            if kb.on_press_key("RIGHT"):
                 drone.set_yaw(1)
-                while kb.is_pressed("RIGHT"):
-                    redundant = True
-            else:
+            elif kb.on_release_key("RIGHT"):
                 drone.set_yaw(0)
 
 
@@ -447,6 +431,7 @@ def drone_movement(drone):
 ## SETTINGS ##
 
 # video settings
+receive_drone_video = True
 show_drone_video = True
 show_detected_ar_tag = True
 show_augmented_image_on_drone_video = True
@@ -474,7 +459,13 @@ def main():
     drone.wait_for_connection(60)
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
     drone.subscribe(drone.EVENT_LOG_DATA, handler)
-    threading.Thread(target=recv_thread, args=[drone]).start()
+    
+    if receive_drone_video == True: ## Setting for turning on/off receiving drone video feed data over UDP
+        threading.Thread(target=recv_thread, args=[drone]).start()
+
+    if movement_enabled == True: ## Setting for turning on off movement in general
+        threading.Thread(target=drone_movement, args=[drone]).start()
+
     if xy_plot_setting == True:
         fig, plot = plt.subplots()
         plot_points_x = []
@@ -487,8 +478,6 @@ def main():
     num = 0
     try:
         while 1:
-            time.sleep(0.01)
-
             if current_image is not new_image:
                 cv.resize(new_image, (0, 0), fx=0.5, fy=0.5)
                 image_process(new_image, p1)
@@ -529,9 +518,6 @@ def main():
                         prev_plot_points_y.append([plot_points_y])
                         
                         key_pressed += 1
-
-            if movement_enabled == True:
-                threading.Thread(target=drone_movement, args=[drone]).start()
 
     except KeyboardInterrupt as e:
         print(e)
