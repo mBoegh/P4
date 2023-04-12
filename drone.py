@@ -9,6 +9,20 @@ from matplotlib import pyplot as plt
 import copy
 import tellopy
 import keyboard as kb
+from functools import wraps
+
+
+def memoize(func):
+    cache = {}
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        key = str(args) + str(kwargs)
+
+        return cache[key]
+    
+    return wrapper
+
 
 ################################################################
 #################    VIDEO FEED FUNCTIONS   ####################
@@ -238,6 +252,7 @@ def reorient(location, maxDim):
         return p1
 
 # main function to process the tag
+@memoize
 def image_process(frame, p1):
     if process_image == True:  # Setting for enabling/disabling the processing of the drone video feed
         try:
