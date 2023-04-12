@@ -11,19 +11,6 @@ import tellopy
 import keyboard as kb
 from functools import wraps
 
-
-def memoize(func):
-    cache = {}
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        key = str(args) + str(kwargs)
-
-        return cache[key]
-    
-    return wrapper
-
-
 ################################################################
 #################    VIDEO FEED FUNCTIONS   ####################
 ################################################################
@@ -252,7 +239,6 @@ def reorient(location, maxDim):
         return p1
 
 # main function to process the tag
-@memoize
 def image_process(frame, p1):
     if process_image == True:  # Setting for enabling/disabling the processing of the drone video feed
         try:
@@ -362,6 +348,10 @@ def drone_movement(drone):
     global remote_control
     global speed_remote_control
     global drone_flying
+    global drone_roll
+    global drone_pitch
+    global drone_yaw
+    global drone_altitude
     
     while True:
         if kb.is_pressed("q"):
@@ -381,47 +371,63 @@ def drone_movement(drone):
 
         if remote_control == True and drone_flying == True:
              ## WASD ##
-            if kb.on_press_key("W"):
+            if kb.is_pressed("W") and (drone_pitch == 0 or drone_pitch == -1):
                 drone.set_pitch(1)
-            elif kb.on_release_key("W"):
+                drone_pitch = 1
+            elif not kb.is_pressed("W") and drone_pitch == 1:
                 drone.set_pitch(0)
+                drone_pitch = 0
 
-            if kb.on_press_key("S"):
+            if kb.is_pressed("S") and (drone_pitch == 0 or drone_pitch == 1):
                 drone.set_pitch(-1)
-            elif kb.on_release_key("S"):
+                drone_pitch = -1
+            elif not kb.is_pressed("S") and drone_pitch == -1:
                 drone.set_pitch(0)
+                drone_pitch = 0
 
-            if kb.on_press_key("A"):
+            if kb.is_pressed("A") and (drone_roll == 0 or drone_roll == 1):
                 drone.set_roll(-1)
-            elif kb.on_release_key("A"):
+                drone_roll = -1
+            elif not kb.is_pressed("A") and drone_roll == -1:
                 drone.set_roll(0)
+                drone_roll = 0
 
-            if kb.on_press_key("D"):
+            if kb.is_pressed("D") and (drone_roll == 0 or drone_roll == -1):
                 drone.set_roll(1)
-            elif kb.on_release_key("D"):
+                drone_roll = 1
+            elif not kb.is_pressed("D") and drone_roll == 1:
                 drone.set_roll(0)
+                drone_roll = 0
 
 
             ## ARROWS ##
-            if kb.on_press_key("UP"):
+            if kb.is_pressed("UP") and (drone_altitude == 0 or drone_altitude == -1):
                 drone.set_throttle(1)
-            elif kb.on_release_key("UP"):
+                drone_altitude = 1
+            elif not kb.is_pressed("UP") and drone_altitude == 1:
                 drone.set_throttle(0)
+                drone_altitude = 0
 
-            if kb.on_press_key("DOWN"):
+            if kb.is_pressed("DOWN") and (drone_altitude == 0 or drone_altitude == 1):
                 drone.set_throttle(-1)
-            elif kb.on_release_key("DOWN"):
+                drone_altitude = -1
+            elif not kb.is_pressed("DOWN") and drone_altitude == -1:
                 drone.set_throttle(0)
+                drone_altitude = 0
 
-            if kb.on_press_key("LEFT"):
+            if kb.is_pressed("LEFT") and (drone_yaw == 0 or drone_yaw == 1):
                 drone.set_yaw(-1)
-            elif kb.on_release_key("LEFT"):
+                drone_yaw = -1
+            elif not kb.is_pressed("LEFT") and drone_yaw == -1:
                 drone.set_yaw(0)
+                drone_yaw = 0
 
-            if kb.on_press_key("RIGHT"):
+            if kb.is_pressed("RIGHT") and (drone_yaw == 0 or drone_yaw == -1):
                 drone.set_yaw(1)
-            elif kb.on_release_key("RIGHT"):
+                drone_yaw = 1
+            elif not kb.is_pressed("RIGHT") and drone_yaw == 1:
                 drone.set_yaw(0)
+                drone_yaw = 0
 
 
 ##############################################################
@@ -433,9 +439,10 @@ def drone_movement(drone):
 # video settings
 receive_drone_video = True
 show_drone_video = True
+
+process_image = False
 show_detected_ar_tag = True
 show_augmented_image_on_drone_video = True
-process_image = False
 
 # plot settings
 xy_plot_setting = False  # Unfininshed
@@ -459,7 +466,7 @@ def main():
     drone.wait_for_connection(60)
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
     drone.subscribe(drone.EVENT_LOG_DATA, handler)
-    
+
     if receive_drone_video == True: ## Setting for turning on/off receiving drone video feed data over UDP
         threading.Thread(target=recv_thread, args=[drone]).start()
 
@@ -478,6 +485,7 @@ def main():
     num = 0
     try:
         while 1:
+            time.sleep(0.01)
             if current_image is not new_image:
                 cv.resize(new_image, (0, 0), fx=0.5, fy=0.5)
                 image_process(new_image, p1)
@@ -542,6 +550,10 @@ if __name__ == "__main__":
     
     #### DRONE FLIGHT SETUP ####
     drone_flying = False
+    drone_roll = 0
+    drone_pitch = 0
+    drone_yaw = 0
+    drone_altitude = 0
 
     #### AR TAG SETUP ####
     augmented_image_img = cv.imread('Morshu.png', 1)
