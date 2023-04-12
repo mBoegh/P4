@@ -239,100 +239,105 @@ def reorient(location, maxDim):
 
 # main function to process the tag
 def image_process(frame, p1):
-    try:
-        final_contour_list = contour_generator(frame)
+    if process_image == True:  # Setting for enabling/disabling the processing of the drone video feed
+        try:
+            final_contour_list = contour_generator(frame)
 
-        # Computing the FOV center pixel
-        height, width = frame.shape[:2]
-        frame_mid_pixel = [height/2, width/2]
-        
-        # Computing euclidian distance to all points [y,x] on the contour from the center pixel
-        distance_to_contour = []
-        for i in range(len(final_contour_list)):
-            euclidian_distance = np.sqrt(((final_contour_list[i])[0]-frame_mid_pixel[0])**2+((final_contour_list[i])[1]-frame_mid_pixel[1])**2) 
-            distance_to_contour.append(euclidian_distance)
-        # Computing the mean euclidian distance
-        mean_distance_to_contour = np.mean(distance_to_contour)
-        #print(mean_distance_to_contour)
-        
-        augmented_image_list = list()
-        for i in range(len(final_contour_list)):
-            cv.drawContours(frame, [final_contour_list[i]], -1, (0, 255, 0), 2)
-            #cv.imshow("Outline", frame)
-
-            # warped = homogenous_transform(small, final_contour_list[i][:, 0])
-
-            c_rez = final_contour_list[i][:, 0]
-            H_matrix = homograph(p1, order(c_rez))
-
-            # H_matrix = homo(p1,order(c))
-            tag = cv.cvtColor(cv.warpPerspective(frame, H_matrix, (200, 200)), cv.COLOR_BGR2GRAY)
-                        
-            height, width = tag.shape[:2]
-
-            # Calculate threshold value
-            threshold_val_white = 200  # low limit with high being 255
-            threshold_val_black = 55  # high limit with low being 0
-
-            # Apply thresholding
-            ret, thresh_white = cv.threshold(tag, threshold_val_white, 255, cv.THRESH_BINARY)
-            ret, thresh_black = cv.threshold(tag, 0, threshold_val_black, cv.THRESH_BINARY)
-
-            # Count number of pixels below threshold
-            count_white = cv.countNonZero(thresh_white)
-            count_black = cv.countNonZero(thresh_black)
-
-            # Calculate percentage of pixels below threshold
-            white_percentage_below_threshold = (count_white / (height * width)) * 100
-            black_percentage_below_threshold = (count_black / (height * width)) * 100
-
-            if show_drone_video == True:
-                cv.imshow("Tello", frame)
+            # Computing the FOV center pixel
+            height, width = frame.shape[:2]
+            frame_mid_pixel = [height/2, width/2]
             
-            if show_detected_ar_tag == True and white_percentage_below_threshold <= 25 and black_percentage_below_threshold >= 75:
-                cv.imshow("AR TAG", tag)
+            # Computing euclidian distance to all points [y,x] on the contour from the center pixel
+            distance_to_contour = []
+            for i in range(len(final_contour_list)):
+                euclidian_distance = np.sqrt(((final_contour_list[i])[0]-frame_mid_pixel[0])**2+((final_contour_list[i])[1]-frame_mid_pixel[1])**2) 
+                distance_to_contour.append(euclidian_distance)
+            # Computing the mean euclidian distance
+            mean_distance_to_contour = np.mean(distance_to_contour)
+            #print(mean_distance_to_contour)
+            
+            augmented_image_list = list()
+            for i in range(len(final_contour_list)):
+                cv.drawContours(frame, [final_contour_list[i]], -1, (0, 255, 0), 2)
+                #cv.imshow("Outline", frame)
 
-            tag1 = cv.cvtColor(tag, cv.COLOR_BGR2GRAY)
-            decoded, location = id_decode(tag1)
-            empty = np.full(frame.shape, 0, dtype='uint8')
-            if not location == None:
-                p2 = reorient(location, 200)
-                if not decoded == None:
-                    print("ID detected: " + str(decoded))
-                H_augmented_image = homograph(order(c_rez), p2)
-                augmented_image_overlap = cv.warpPerspective(augmented_image_resize, H_augmented_image, (frame.shape[1], frame.shape[0]))
-                if not np.array_equal(augmented_image_overlap, empty):
-                    augmented_image_list.append(augmented_image_overlap.copy())
-                    # print(augmented_image_overlap.shape)
-        
-        if show_augmented_image_on_drone_video == True:
-            mask = np.full(frame.shape, 0, dtype='uint8')
-            if augmented_image_list != []:
-                for augmented_image in augmented_image_list:
-                    temp = cv.add(mask, augmented_image.copy())
-                    mask = temp
+                # warped = homogenous_transform(small, final_contour_list[i][:, 0])
 
-                augmented_image_gray = cv.cvtColor(mask, cv.COLOR_BGR2GRAY)
-                r, augmented_image_bin = cv.threshold(augmented_image_gray, 10, 255, cv.THRESH_BINARY)
+                c_rez = final_contour_list[i][:, 0]
+                H_matrix = homograph(p1, order(c_rez))
 
-                mask_inv = cv.bitwise_not(augmented_image_bin)
+                # H_matrix = homo(p1,order(c))
+                tag = cv.cvtColor(cv.warpPerspective(frame, H_matrix, (200, 200)), cv.COLOR_BGR2GRAY)
+                            
+                height, width = tag.shape[:2]
 
-                mask_3d = frame.copy()
-                mask_3d[:, :, 0] = mask_inv
-                mask_3d[:, :, 1] = mask_inv
-                mask_3d[:, :, 2] = mask_inv
-                img_masked = cv.bitwise_and(frame, mask_3d)
-                final_image = cv.add(img_masked, mask)
+                # Calculate threshold value
+                threshold_val_white = 200  # low limit with high being 255
+                threshold_val_black = 55  # high limit with low being 0
 
-                cv.imshow('Tello', final_image)
+                # Apply thresholding
+                ret, thresh_white = cv.threshold(tag, threshold_val_white, 255, cv.THRESH_BINARY)
+                ret, thresh_black = cv.threshold(tag, 0, threshold_val_black, cv.THRESH_BINARY)
+
+                # Count number of pixels below threshold
+                count_white = cv.countNonZero(thresh_white)
+                count_black = cv.countNonZero(thresh_black)
+
+                # Calculate percentage of pixels below threshold
+                white_percentage_below_threshold = (count_white / (height * width)) * 100
+                black_percentage_below_threshold = (count_black / (height * width)) * 100
+
+                if show_drone_video == True:
+                    cv.imshow("Tello", frame)
+                
+                if show_detected_ar_tag == True and white_percentage_below_threshold <= 25 and black_percentage_below_threshold >= 75:
+                    cv.imshow("AR TAG", tag)
+
+                tag1 = cv.cvtColor(tag, cv.COLOR_BGR2GRAY)
+                decoded, location = id_decode(tag1)
+                empty = np.full(frame.shape, 0, dtype='uint8')
+                if not location == None:
+                    p2 = reorient(location, 200)
+                    if not decoded == None:
+                        print("ID detected: " + str(decoded))
+                    H_augmented_image = homograph(order(c_rez), p2)
+                    augmented_image_overlap = cv.warpPerspective(augmented_image_resize, H_augmented_image, (frame.shape[1], frame.shape[0]))
+                    if not np.array_equal(augmented_image_overlap, empty):
+                        augmented_image_list.append(augmented_image_overlap.copy())
+                        # print(augmented_image_overlap.shape)
+            
+            if show_augmented_image_on_drone_video == True:
+                mask = np.full(frame.shape, 0, dtype='uint8')
+                if augmented_image_list != []:
+                    for augmented_image in augmented_image_list:
+                        temp = cv.add(mask, augmented_image.copy())
+                        mask = temp
+
+                    augmented_image_gray = cv.cvtColor(mask, cv.COLOR_BGR2GRAY)
+                    r, augmented_image_bin = cv.threshold(augmented_image_gray, 10, 255, cv.THRESH_BINARY)
+
+                    mask_inv = cv.bitwise_not(augmented_image_bin)
+
+                    mask_3d = frame.copy()
+                    mask_3d[:, :, 0] = mask_inv
+                    mask_3d[:, :, 1] = mask_inv
+                    mask_3d[:, :, 2] = mask_inv
+                    img_masked = cv.bitwise_and(frame, mask_3d)
+                    final_image = cv.add(img_masked, mask)
+
+                    cv.imshow('Tello', final_image)
+                    cv.waitKey(1)
+
+                    if cv.waitKey(1) & 0xff == 27:
+                        cv.destroyAllWindows()
+        except:
+            if show_drone_video == True:
+                cv.imshow('Tello', frame)
                 cv.waitKey(1)
-
-                if cv.waitKey(1) & 0xff == 27:
-                    cv.destroyAllWindows()
-    except:
-        if show_drone_video == True:
-            cv.imshow('Tello', frame)
-            cv.waitKey(1)
+    
+    if show_drone_video == True:
+        cv.imshow('Tello', frame)
+        cv.waitKey(1)
 
 ###############################################################
 #################    MOVEMENT FUNCTIONS    ####################
@@ -341,8 +346,7 @@ def image_process(frame, p1):
 def drone_movement(drone):
     global remote_control
     global speed_remote_control
-
-    drone_flying = False
+    global drone_flying
     
     while True:
         if kb.is_pressed("q"):
@@ -351,6 +355,10 @@ def drone_movement(drone):
         if drone_flying == False and kb.is_pressed("r"):
             drone.takeoff()
             drone_flying = True
+
+        if drone_flying == False and kb.is_pressed("t"):
+            drone.throw_and_go()
+            drone_flying = True
         
         if drone_flying == True and kb.is_pressed("l"):
             drone.land()
@@ -358,45 +366,61 @@ def drone_movement(drone):
 
         if remote_control == True and drone_flying == True:
              ## WASD ##
-            while kb.is_pressed("W"):
+            if kb.is_pressed("W"):
                 drone.set_pitch(1)
+                while kb.is_pressed("W"):
+                    redundant = True
             else:
                 drone.set_pitch(0)
 
-            while kb.is_pressed("S"):
+            if kb.is_pressed("S"):
                 drone.set_pitch(-1)
+                while kb.is_pressed("S"):
+                    redundant = True
             else:
                 drone.set_pitch(0)
 
-            while kb.is_pressed("A"):
+            if kb.is_pressed("A"):
                 drone.set_roll(-1)
+                while kb.is_pressed("A"):
+                    redundant = True
             else:
                 drone.set_roll(0)
 
-            while kb.is_pressed("D"):
+            if kb.is_pressed("D"):
                 drone.set_roll(1)
+                while kb.is_pressed("D"):
+                    redundant = True
             else:
                 drone.set_roll(0)
 
 
             ## ARROWS ##
-            while kb.is_pressed("UP"):
+            if kb.is_pressed("UP"):
                 drone.set_throttle(1)
+                while kb.is_pressed("UP"):
+                    redundant = True
             else:
                 drone.set_throttle(0)
 
-            while kb.is_pressed("DOWN"):
+            if kb.is_pressed("DOWN"):
                 drone.set_throttle(-1)
+                while kb.is_pressed("DOWN"):
+                    redundant = True
             else:
                 drone.set_throttle(0)
 
-            while kb.is_pressed("LEFT"):
+            if kb.is_pressed("LEFT"):
                 drone.set_yaw(-1)
+                while kb.is_pressed("LEFT"):
+                    redundant = True
             else:
                 drone.set_yaw(0)
 
-            while kb.is_pressed("RIGHT"):
+            if kb.is_pressed("RIGHT"):
                 drone.set_yaw(1)
+                while kb.is_pressed("RIGHT"):
+                    redundant = True
             else:
                 drone.set_yaw(0)
 
@@ -411,6 +435,7 @@ def drone_movement(drone):
 show_drone_video = True
 show_detected_ar_tag = True
 show_augmented_image_on_drone_video = True
+process_image = False
 
 # plot settings
 xy_plot_setting = False  # Unfininshed
@@ -435,7 +460,6 @@ def main():
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
     drone.subscribe(drone.EVENT_LOG_DATA, handler)
     threading.Thread(target=recv_thread, args=[drone]).start()
-
     if xy_plot_setting == True:
         fig, plot = plt.subplots()
         plot_points_x = []
@@ -464,7 +488,7 @@ def main():
                 num += 1
                 
                 # Upon pressing the "p" button on the keyboard the current data is plotted in the following process
-                if kb.is_pressed("p"):
+                if kb.is_pressed("å"):
                     if len(plot_points_x) > 0 and len(plot_points_y) > 0 and len(plot_points_x) == len(plot_points_y):
                         
                         # plot current data as blue
@@ -514,6 +538,9 @@ if __name__ == "__main__":
     new_image = None
     flight_data = None
     log_data = None
+    
+    #### DRONE FLIGHT SETUP ####
+    drone_flying = False
 
     #### AR TAG SETUP ####
     augmented_image_img = cv.imread('Morshu.png', 1)
