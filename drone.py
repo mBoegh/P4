@@ -57,6 +57,7 @@ def recv_thread(drone):
     global new_image
     global flight_data
     global log_data
+    global rotate_image
 
     try:
         container = av.open(drone.get_video_stream())
@@ -69,8 +70,12 @@ def recv_thread(drone):
                     frame_skip = frame_skip - 1
                     continue
                 start_time = time.time()
-                image = cv.rotate(cv.cvtColor(np.array(frame.to_image()), cv.COLOR_RGB2BGR), cv.ROTATE_180)
                 
+                if rotate_image == True:
+                    image = cv.rotate(cv.cvtColor(np.array(frame.to_image()), cv.COLOR_RGB2BGR), cv.ROTATE_180)
+                else:
+                    image = cv.cvtColor(np.array(frame.to_image()), cv.COLOR_RGB2BGR)
+
                 # Draw text on image
                 '''
                 if flight_data:
@@ -429,7 +434,6 @@ def drone_movement(drone):
                 drone.set_yaw(0)
                 drone_yaw = 0
 
-
 ##############################################################
 #################    MAIN  &  SETTINGS    ####################
 ##############################################################
@@ -439,6 +443,7 @@ def drone_movement(drone):
 # video settings
 receive_drone_video = True
 show_drone_video = True
+rotate_image = False
 
 process_image = False
 show_detected_ar_tag = True
@@ -467,10 +472,10 @@ def main():
     drone.subscribe(drone.EVENT_FLIGHT_DATA, handler)
     drone.subscribe(drone.EVENT_LOG_DATA, handler)
 
-    if receive_drone_video == True: ## Setting for turning on/off receiving drone video feed data over UDP
-        threading.Thread(target=recv_thread, args=[drone]).start()
+    #if receive_drone_video == True: ## Setting for turning on/off receiving drone video feed data over UDP
+    threading.Thread(target=recv_thread, args=[drone]).start()
 
-    if movement_enabled == True: ## Setting for turning on off movement in general
+    if movement_enabled == True: ## Setting for turning on/off movement in general
         threading.Thread(target=drone_movement, args=[drone]).start()
 
     if xy_plot_setting == True:
