@@ -245,6 +245,11 @@ def reorient(location, maxDim):
 
 # main function to process the tag
 def image_process(frame, p1):
+    global process_image
+    global show_drone_video
+    global show_detected_ar_tag
+    global show_augmented_image_on_drone_video
+
     if process_image == True:  # Setting for enabling/disabling the processing of the drone video feed
         try:
             final_contour_list = contour_generator(frame)
@@ -464,6 +469,14 @@ speed_remote_control = 50
 def main():
     global new_image
     global run_recv_thread
+    global remote_control
+    global speed_remote_control
+    global drone_flying
+    global drone_roll
+    global drone_pitch
+    global drone_yaw
+    global drone_altitude
+    
     current_image = None
 
     drone = tellopy.Tello()
@@ -476,7 +489,7 @@ def main():
     threading.Thread(target=recv_thread, args=[drone]).start()
 
     if movement_enabled == True: ## Setting for turning on/off movement in general
-        threading.Thread(target=drone_movement, args=[drone]).start()
+        threading.Thread(target=image_process, args=[new_image, p1]).start()
 
     if xy_plot_setting == True:
         fig, plot = plt.subplots()
@@ -493,8 +506,83 @@ def main():
             time.sleep(0.01)
             if current_image is not new_image:
                 cv.resize(new_image, (0, 0), fx=0.5, fy=0.5)
-                image_process(new_image, p1)
-                current_image = new_image
+    
+            if kb.is_pressed("q"):
+                drone.land()
+
+            if drone_flying == False and kb.is_pressed("r"):
+                drone.takeoff()
+                drone_flying = True
+
+            if drone_flying == False and kb.is_pressed("t"):
+                drone.throw_and_go()
+                drone_flying = True
+            
+            if drone_flying == True and kb.is_pressed("l"):
+                drone.land()
+                drone_flying = False
+
+            if remote_control == True and drone_flying == True:
+                ## WASD ##
+                if kb.is_pressed("W") and (drone_pitch == 0 or drone_pitch == -1):
+                    drone.set_pitch(1)
+                    drone_pitch = 1
+                elif not kb.is_pressed("W") and drone_pitch == 1:
+                    drone.set_pitch(0)
+                    drone_pitch = 0
+
+                if kb.is_pressed("S") and (drone_pitch == 0 or drone_pitch == 1):
+                    drone.set_pitch(-1)
+                    drone_pitch = -1
+                elif not kb.is_pressed("S") and drone_pitch == -1:
+                    drone.set_pitch(0)
+                    drone_pitch = 0
+
+                if kb.is_pressed("A") and (drone_roll == 0 or drone_roll == 1):
+                    drone.set_roll(-1)
+                    drone_roll = -1
+                elif not kb.is_pressed("A") and drone_roll == -1:
+                    drone.set_roll(0)
+                    drone_roll = 0
+
+                if kb.is_pressed("D") and (drone_roll == 0 or drone_roll == -1):
+                    drone.set_roll(1)
+                    drone_roll = 1
+                elif not kb.is_pressed("D") and drone_roll == 1:
+                    drone.set_roll(0)
+                    drone_roll = 0
+
+
+            ## ARROWS ##
+            if kb.is_pressed("UP") and (drone_altitude == 0 or drone_altitude == -1):
+                drone.set_throttle(1)
+                drone_altitude = 1
+            elif not kb.is_pressed("UP") and drone_altitude == 1:
+                drone.set_throttle(0)
+                drone_altitude = 0
+
+            if kb.is_pressed("DOWN") and (drone_altitude == 0 or drone_altitude == 1):
+                drone.set_throttle(-1)
+                drone_altitude = -1
+            elif not kb.is_pressed("DOWN") and drone_altitude == -1:
+                drone.set_throttle(0)
+                drone_altitude = 0
+
+            if kb.is_pressed("LEFT") and (drone_yaw == 0 or drone_yaw == 1):
+                drone.set_yaw(-1)
+                drone_yaw = -1
+            elif not kb.is_pressed("LEFT") and drone_yaw == -1:
+                drone.set_yaw(0)
+                drone_yaw = 0
+
+            if kb.is_pressed("RIGHT") and (drone_yaw == 0 or drone_yaw == -1):
+                drone.set_yaw(1)
+                drone_yaw = 1
+            elif not kb.is_pressed("RIGHT") and drone_yaw == 1:
+                drone.set_yaw(0)
+                drone_yaw = 0                
+            
+            current_image = new_image
 
             if xy_plot_setting == True:
                 if num % 10 == 0:
