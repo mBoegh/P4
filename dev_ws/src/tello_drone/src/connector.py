@@ -11,8 +11,10 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 
+from geometry_msgs.msg import Twist, Vector3
 
-class Video_publisher(Node):
+
+class Connector(Node):
 
     def __init__(self):
         drone = tellopy.Tello()
@@ -24,8 +26,19 @@ class Video_publisher(Node):
         # skip first 300 frames
         frame_skip = 300    
         
-        super().__init__('video_publisher')
+        super().__init__('connector')
         self.publisher_ = self.create_publisher(String, 'video_feed', 10)
+
+        self.subscription = self.create_subscription(
+            Twist,
+            'movement',
+            self.listener_callback,
+            10)
+        self.subscription  # prevent unused variable warning
+
+    def listener_callback(self, msg):
+        self.get_logger().info('I heard: "%s"' % msg.data)
+
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
@@ -33,8 +46,6 @@ class Video_publisher(Node):
     def timer_callback(self):
         def reciever(self, drone):
             global frame_skip
-
-        
             try:
                 container = av.open(drone.get_video_stream())
                 
@@ -87,14 +98,14 @@ def handler(event, sender, data, **args):
 def main(args=None):
     rclpy.init(args=args)
 
-    videofeed_publisher = Video_publisher()
+    connector = Connector()
 
-    rclpy.spin(videofeed_publisher)
+    rclpy.spin(connector)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    videofeed_publisher.destroy_node()
+    connector.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':

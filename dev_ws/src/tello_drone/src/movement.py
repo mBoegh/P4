@@ -1,4 +1,49 @@
 import keyboard as kb
+import rclpy
+from rclpy.node import Node
+
+from std_msgs.msg import String
+
+from geometry_msgs.msg import Twist, Vector3
+
+
+class Movement(Node):
+
+    def __init__(self):
+
+        remote_control = True
+
+        #### DRONE FLIGHT SETUP ####
+        drone_flying = False
+        drone_roll = 0
+        drone_pitch = 0
+        drone_yaw = 0
+        drone_altitude = 0
+
+        super().__init__('movement')
+        self.publisher_ = self.create_publisher(Twist, 'movement', 10)
+        timer_period = 0.5  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.i = 0
+
+    def timer_callback(self):
+        msg = Twist(
+            linear = Vector3(
+                x = None,
+                y = None,
+                z = float(drone_altitude)
+            ),
+            angular = Vector3(
+                rotX = float(drone_roll),
+                rotY = float(drone_pitch),
+                rotZ = float(drone_yaw)
+            )
+        )
+        msg.data = 'Hello World: %d' % self.i
+        self.publisher_.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg.data)
+        self.i += 1
+
 
 ###############################################################
 #################    MOVEMENT FUNCTIONS    ####################
@@ -6,7 +51,6 @@ import keyboard as kb
 
 def drone_movement(drone):
     global remote_control
-    global speed_remote_control
     global drone_flying
     global drone_roll
     global drone_pitch
@@ -88,3 +132,21 @@ def drone_movement(drone):
             elif not kb.is_pressed("RIGHT") and drone_yaw == 1:
                 drone.set_yaw(0)
                 drone_yaw = 0
+
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    movement = Movement()
+
+    rclpy.spin(movement)
+
+    # Destroy the node explicitly
+    # (optional - otherwise it will be done automatically
+    # when the garbage collector destroys the node object)
+    movement.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
