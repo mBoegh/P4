@@ -1,0 +1,4 @@
+Invoking command in '/home/mimi/4_sem_proj_ws/build/turtlesim': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/mimi/ros2_ws/install/new_controller:/opt/ros/humble /usr/bin/cmake --build /home/mimi/4_sem_proj_ws/build/turtlesim -- -j8 -l8
+Invoked command in '/home/mimi/4_sem_proj_ws/build/turtlesim' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/mimi/ros2_ws/install/new_controller:/opt/ros/humble /usr/bin/cmake --build /home/mimi/4_sem_proj_ws/build/turtlesim -- -j8 -l8
+Invoking command in '/home/mimi/4_sem_proj_ws/build/turtlesim': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/mimi/ros2_ws/install/new_controller:/opt/ros/humble /usr/bin/cmake --install /home/mimi/4_sem_proj_ws/build/turtlesim
+Invoked command in '/home/mimi/4_sem_proj_ws/build/turtlesim' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/mimi/ros2_ws/install/new_controller:/opt/ros/humble /usr/bin/cmake --install /home/mimi/4_sem_proj_ws/build/turtlesim

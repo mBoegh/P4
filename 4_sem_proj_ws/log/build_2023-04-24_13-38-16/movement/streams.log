@@ -1,0 +1,24 @@
+[0.898s] Invoking command in '/home/mimi/4_sem_proj_ws/src/movement': PYTHONPATH=/home/mimi/4_sem_proj_ws/build/movement/prefix_override:/home/mimi/4_sem_proj_ws/install/movement/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/movement build --build-base /home/mimi/4_sem_proj_ws/build/movement/build install --record /home/mimi/4_sem_proj_ws/build/movement/install.log --single-version-externally-managed
+[1.106s] running egg_info
+[1.107s] writing ../../build/movement/movement.egg-info/PKG-INFO
+[1.107s] writing dependency_links to ../../build/movement/movement.egg-info/dependency_links.txt
+[1.107s] writing entry points to ../../build/movement/movement.egg-info/entry_points.txt
+[1.107s] writing requirements to ../../build/movement/movement.egg-info/requires.txt
+[1.107s] writing top-level names to ../../build/movement/movement.egg-info/top_level.txt
+[1.107s] reading manifest file '../../build/movement/movement.egg-info/SOURCES.txt'
+[1.108s] writing manifest file '../../build/movement/movement.egg-info/SOURCES.txt'
+[1.108s] running build
+[1.108s] running build_py
+[1.108s] copying movement/movement.py -> /home/mimi/4_sem_proj_ws/build/movement/build/lib/movement
+[1.108s] running install
+[1.108s] running install_lib
+[1.114s] copying /home/mimi/4_sem_proj_ws/build/movement/build/lib/movement/movement.py -> /home/mimi/4_sem_proj_ws/install/movement/lib/python3.10/site-packages/movement
+[1.114s] byte-compiling /home/mimi/4_sem_proj_ws/install/movement/lib/python3.10/site-packages/movement/movement.py to movement.cpython-310.pyc
+[1.114s] running install_data
+[1.114s] running install_egg_info
+[1.114s] removing '/home/mimi/4_sem_proj_ws/install/movement/lib/python3.10/site-packages/movement-0.0.0-py3.10.egg-info' (and everything under it)
+[1.119s] Copying ../../build/movement/movement.egg-info to /home/mimi/4_sem_proj_ws/install/movement/lib/python3.10/site-packages/movement-0.0.0-py3.10.egg-info
+[1.119s] running install_scripts
+[1.145s] Installing movement script to /home/mimi/4_sem_proj_ws/install/movement/lib/movement
+[1.145s] writing list of installed files to '/home/mimi/4_sem_proj_ws/build/movement/install.log'
+[1.190s] Invoked command in '/home/mimi/4_sem_proj_ws/src/movement' returned '0': PYTHONPATH=/home/mimi/4_sem_proj_ws/build/movement/prefix_override:/home/mimi/4_sem_proj_ws/install/movement/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/movement build --build-base /home/mimi/4_sem_proj_ws/build/movement/build install --record /home/mimi/4_sem_proj_ws/build/movement/install.log --single-version-externally-managed
