@@ -27,8 +27,10 @@ class Connector(Node):
         frame_skip = 300    
         
         super().__init__('connector')
+        # Create a publisher which publishes to the 'video_feed' topic
         self.publisher_ = self.create_publisher(String, 'video_feed', 10)
 
+        # Create a subscribtion to the topic 'movement' yielding data of type Twist. Twist has 2 1x3 vectors of x, y & z and roll, pitch & yaw respectively.
         self.subscription = self.create_subscription(
             Twist,
             'movement',
@@ -98,6 +100,7 @@ def handler(event, sender, data, **args):
 def main(args=None):
     rclpy.init(args=args)
 
+    # Create instance of Connector class
     connector = Connector()
 
     rclpy.spin(connector)
