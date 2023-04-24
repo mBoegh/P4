@@ -1,3 +1,0 @@
-[console_scripts]
-connector = connector.connector:main
-
