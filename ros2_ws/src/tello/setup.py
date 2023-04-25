@@ -1,4 +1,6 @@
 from setuptools import setup
+import os
+from glob import glob
 
 package_name = 'tello'
 
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name), glob('launch/*.launch.py'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -19,7 +22,20 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': [
+        'console_scripts': ["connector=tello.connector:Main",
+        "image_processor=tello.image_processor:Main",
+        "movement=tello.movement:Main",
+        "launch=tello.tello_launch:generate_launch_description"
         ],
     },
 )
+import launch
+import launch_ros.actions
+
+def generate_launch_description():
+    return launch.LaunchDescription([
+        launch_ros.actions.Node(
+            package='tello',
+            executable='connector',
+            name='connector'),
+  ])

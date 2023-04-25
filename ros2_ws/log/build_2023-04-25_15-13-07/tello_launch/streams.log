@@ -1,0 +1,20 @@
+[0.644s] Invoking command in '/home/mimi/Documents/GitHub/P4/ros2_ws/src/tello_launch': PYTHONPATH=/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello_launch/prefix_override:/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello_launch/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/tello_launch build --build-base /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello_launch/build install --record /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello_launch/install.log --single-version-externally-managed
+[0.818s] running egg_info
+[0.819s] writing ../../build/tello_launch/tello_launch.egg-info/PKG-INFO
+[0.819s] writing dependency_links to ../../build/tello_launch/tello_launch.egg-info/dependency_links.txt
+[0.819s] writing entry points to ../../build/tello_launch/tello_launch.egg-info/entry_points.txt
+[0.819s] writing requirements to ../../build/tello_launch/tello_launch.egg-info/requires.txt
+[0.819s] writing top-level names to ../../build/tello_launch/tello_launch.egg-info/top_level.txt
+[0.821s] reading manifest file '../../build/tello_launch/tello_launch.egg-info/SOURCES.txt'
+[0.821s] writing manifest file '../../build/tello_launch/tello_launch.egg-info/SOURCES.txt'
+[0.821s] running build
+[0.822s] running build_py
+[0.822s] running install
+[0.822s] running install_lib
+[0.822s] running install_data
+[0.823s] running install_egg_info
+[0.824s] removing '/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello_launch/lib/python3.10/site-packages/tello_launch-0.0.0-py3.10.egg-info' (and everything under it)
+[0.824s] Copying ../../build/tello_launch/tello_launch.egg-info to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello_launch/lib/python3.10/site-packages/tello_launch-0.0.0-py3.10.egg-info
+[0.825s] running install_scripts
+[0.841s] writing list of installed files to '/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello_launch/install.log'
+[0.866s] Invoked command in '/home/mimi/Documents/GitHub/P4/ros2_ws/src/tello_launch' returned '0': PYTHONPATH=/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello_launch/prefix_override:/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello_launch/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/tello_launch build --build-base /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello_launch/build install --record /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello_launch/install.log --single-version-externally-managed

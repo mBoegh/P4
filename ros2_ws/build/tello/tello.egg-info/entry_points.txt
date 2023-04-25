@@ -1,3 +1,6 @@
 [console_scripts]
-
+connector = tello.connector:Main
+image_processor = tello.image_processor:Main
+launch = tello.tello_launch:generate_launch_description
+movement = tello.movement:Main
 
