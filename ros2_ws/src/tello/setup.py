@@ -23,9 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': ["connector=tello.connector:Main",
-        "image_processor=tello.image_processor:Main",
-        "movement=tello.movement:Main",
-        "launch=tello.tello_launch:generate_launch_description"
+        "image_processor=tello.image_processor:main",
+        "movement=tello.movement:main",
         ],
     },
 )

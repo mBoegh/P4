@@ -9,42 +9,28 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 
-
+### Node setup ####
 class Video_subscriber(Node):
-
     def __init__(self):
-
-
-        #### AR TAG SETUP ####
-        augmented_image_img = cv.imread('Morshu.png', 1)
-        augmented_image_resize = cv.resize(augmented_image_img, (200, 200))
-        dim = 200
-        p1 = np.array([
-            [0, 0],
-            [dim - 1, 0],
-            [dim - 1, dim - 1],
-            [0, dim - 1]], dtype="float32")
-        
-
         super().__init__('Video_subscriber')
         self.subscription = self.create_subscription(
             String,
             'video_feed',
             self.listener_callback,
-            10)
+            10) #Subscribes to getting video feed
         self.subscription  # prevent unused variable warning
 
-    def listener_callback(self, msg):
-        global p1
+    def listener_callback(self, msg):   # Function that uses the data from the subscription
+        global p1 # What is p1? 
         
-        self.get_logger().info('I heard: "%s"' % msg.data)
-        image_process(msg.data, p1)
+        self.get_logger().info('I heard: "%s"' % msg.data) # Prints the data it has recieved 
+        image_process(msg.data, p1) # Start processing camera feed that it gets from the subscription
 
-
+### MAIN ###
 def main(args=None):
     rclpy.init(args=args)
 
-    videofeed_subscriber = Video_subscriber()
+    videofeed_subscriber = Video_subscriber() # Getting video feed and sending it to processing
 
     rclpy.spin(videofeed_subscriber)
 
@@ -56,6 +42,15 @@ def main(args=None):
 
 
 if __name__ == '__main__':
+    ### AR Tag Setup ###
+    augmented_image_img = cv.imread('src/tello/tello/Morshu.png', 1)
+    augmented_image_resize = cv.resize(augmented_image_img, (200, 200)) 
+    dim = 200
+    p1 = np.array([
+            [0, 0],
+            [dim - 1, 0],
+            [dim - 1, dim - 1],
+            [0, dim - 1]], dtype="float32")
     main()
 
 ############################################################
@@ -207,11 +202,11 @@ def reorient(location, maxDim):
 
 # main function to process the tag
 def image_process(frame, p1):
-    global augmented_image_resize
+    global augmented_image_resize 
 
     try:
         final_contour_list = contour_generator(frame)
-
+        
         # Computing the FOV center pixel
         height, width = frame.shape[:2]
         frame_mid_pixel = [height/2, width/2]
@@ -298,4 +293,4 @@ def image_process(frame, p1):
                 cv.destroyAllWindows()
     except:
         cv.imshow('Tello', frame)
-        cv.waitKey(1)
+        cv.waitKey(1) 
