@@ -1,0 +1,32 @@
+[0.657s] Invoking command in '/home/mimi/Documents/GitHub/P4/ros2_ws/src/tello': PYTHONPATH=/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/prefix_override:/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/tello build --build-base /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build install --record /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/install.log --single-version-externally-managed
+[0.825s] running egg_info
+[0.825s] writing ../../build/tello/tello.egg-info/PKG-INFO
+[0.825s] writing dependency_links to ../../build/tello/tello.egg-info/dependency_links.txt
+[0.825s] writing entry points to ../../build/tello/tello.egg-info/entry_points.txt
+[0.825s] writing requirements to ../../build/tello/tello.egg-info/requires.txt
+[0.826s] writing top-level names to ../../build/tello/tello.egg-info/top_level.txt
+[0.827s] reading manifest file '../../build/tello/tello.egg-info/SOURCES.txt'
+[0.827s] writing manifest file '../../build/tello/tello.egg-info/SOURCES.txt'
+[0.827s] running build
+[0.827s] running build_py
+[0.827s] copying tello/image_processor.py -> /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build/lib/tello
+[0.828s] copying tello/connector.py -> /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build/lib/tello
+[0.828s] running install
+[0.828s] running install_lib
+[0.828s] copying /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build/lib/tello/image_processor.py -> /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello
+[0.828s] copying /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build/lib/tello/connector.py -> /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello
+[0.829s] byte-compiling /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello/image_processor.py to image_processor.cpython-310.pyc
+[0.831s] byte-compiling /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello/__init__.py to __init__.cpython-310.pyc
+[0.831s] byte-compiling /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello/tello_launch.py to tello_launch.cpython-310.pyc
+[0.831s] byte-compiling /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello/connector.py to connector.cpython-310.pyc
+[0.832s] byte-compiling /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello/movement.py to movement.cpython-310.pyc
+[0.832s] running install_data
+[0.833s] running install_egg_info
+[0.834s] removing '/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello-0.0.0-py3.10.egg-info' (and everything under it)
+[0.834s] Copying ../../build/tello/tello.egg-info to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello-0.0.0-py3.10.egg-info
+[0.835s] running install_scripts
+[0.849s] Installing connector script to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/tello
+[0.849s] Installing image_processor script to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/tello
+[0.849s] Installing movement script to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/tello
+[0.849s] writing list of installed files to '/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/install.log'
+[0.983s] Invoked command in '/home/mimi/Documents/GitHub/P4/ros2_ws/src/tello' returned '0': PYTHONPATH=/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/prefix_override:/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/tello build --build-base /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build install --record /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/install.log --single-version-externally-managed

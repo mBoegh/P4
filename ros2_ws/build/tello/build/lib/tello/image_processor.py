@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import cv2 as cv
 import numpy as np
 import copy
@@ -8,29 +7,37 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
 
-### Node setup ####
 class Video_subscriber(Node):
+
     def __init__(self):
+        self.bridge = CvBridge()
+
+        # Subscribing to the '/video_feed' topic on which the tello drone video feed is published from connector.py frame by frame
         super().__init__('Video_subscriber')
         self.subscription = self.create_subscription(
-            String,
-            'video_feed',
+            Image,
+            '/video_feed',
             self.listener_callback,
-            10) #Subscribes to getting video feed
+            10)
         self.subscription  # prevent unused variable warning
 
-    def listener_callback(self, msg):   # Function that uses the data from the subscription
-        global p1 # What is p1? 
+    def listener_callback(self, image_msg):
+        global p1
         
-        self.get_logger().info('I heard: "%s"' % msg.data) # Prints the data it has recieved 
-        image_process(msg.data, p1) # Start processing camera feed that it gets from the subscription
+        # Converting subscribed message of type Image from ROS to CV2
+        image = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="passtrough")
 
-### MAIN ###
+        # Processing the image with the image processing alogrithm
+        image_process(image, p1)
+
+
 def main(args=None):
     rclpy.init(args=args)
 
-    videofeed_subscriber = Video_subscriber() # Getting video feed and sending it to processing
+    videofeed_subscriber = Video_subscriber()
 
     rclpy.spin(videofeed_subscriber)
 
@@ -42,15 +49,17 @@ def main(args=None):
 
 
 if __name__ == '__main__':
-    ### AR Tag Setup ###
-    augmented_image_img = cv.imread('src/tello/tello/Morshu.png', 1)
-    augmented_image_resize = cv.resize(augmented_image_img, (200, 200)) 
+#### AR TAG SETUP ####
+    augmented_image_img = cv.imread('/home/boegh/dev_ws/src/tello/tello/Morshu.png', 1)
+    augmented_image_resize = cv.resize(augmented_image_img, (200, 200))
+    
     dim = 200
     p1 = np.array([
-            [0, 0],
-            [dim - 1, 0],
-            [dim - 1, dim - 1],
-            [0, dim - 1]], dtype="float32")
+        [0, 0],
+        [dim - 1, 0],
+        [dim - 1, dim - 1],
+        [0, dim - 1]], dtype="float32")
+        
     main()
 
 ############################################################
@@ -202,12 +211,15 @@ def reorient(location, maxDim):
 
 # main function to process the tag
 def image_process(frame, p1):
-    global augmented_image_resize 
+    frame = np.array(frame,np.uint8)
+    global augmented_image_resize
+
 
     try:
         final_contour_list = contour_generator(frame)
-        
+
         # Computing the FOV center pixel
+        
         height, width = frame.shape[:2]
         frame_mid_pixel = [height/2, width/2]
         
@@ -293,4 +305,4 @@ def image_process(frame, p1):
                 cv.destroyAllWindows()
     except:
         cv.imshow('Tello', frame)
-        cv.waitKey(1) 
+        cv.waitKey(1)

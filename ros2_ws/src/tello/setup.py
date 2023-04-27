@@ -22,7 +22,7 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ["connector=tello.connector:Main",
+        'console_scripts': ["connector=tello.connector:main",
         "image_processor=tello.image_processor:main",
         "movement=tello.movement:main",
         ],
