@@ -27,7 +27,7 @@ class Video_publisher(Node):
         # Creating a publisher for the topic '/video_feed' on which the tello drone video feed will be publishing frame by frame
         super().__init__('video_publisher')
         self.bridge = CvBridge()
-        self.pub = self.create_publisher(Image, '/video_feed', 10)
+        self.pub = self.create_publisher(Image, '/camera/image_raw', 10)
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
