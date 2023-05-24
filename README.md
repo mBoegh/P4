@@ -9,6 +9,7 @@ The code for the mobile robot controller node is found at:
 
 The mobile robot controller is run by running the python script through visual studio code
 
+---
 The code for the drone controller node is found at:
 *   /ros2_ws/src/tello/tello/connector.py
 
