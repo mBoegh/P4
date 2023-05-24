@@ -1,0 +1,26 @@
+[0.771s] Invoking command in '/home/mimi/Documents/GitHub/P4/ros2_ws/src/tello': PYTHONPATH=/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/prefix_override:/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/tello build --build-base /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build install --record /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/install.log --single-version-externally-managed
+[0.957s] running egg_info
+[0.957s] writing ../../build/tello/tello.egg-info/PKG-INFO
+[0.957s] writing dependency_links to ../../build/tello/tello.egg-info/dependency_links.txt
+[0.958s] writing entry points to ../../build/tello/tello.egg-info/entry_points.txt
+[0.958s] writing requirements to ../../build/tello/tello.egg-info/requires.txt
+[0.958s] writing top-level names to ../../build/tello/tello.egg-info/top_level.txt
+[0.959s] reading manifest file '../../build/tello/tello.egg-info/SOURCES.txt'
+[0.960s] writing manifest file '../../build/tello/tello.egg-info/SOURCES.txt'
+[0.960s] running build
+[0.960s] running build_py
+[0.960s] copying tello/connector.py -> /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build/lib/tello
+[0.960s] running install
+[0.960s] running install_lib
+[0.961s] copying /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build/lib/tello/connector.py -> /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello
+[0.961s] byte-compiling /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello/connector.py to connector.cpython-310.pyc
+[0.962s] running install_data
+[0.962s] running install_egg_info
+[0.963s] removing '/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello-0.0.0-py3.10.egg-info' (and everything under it)
+[0.963s] Copying ../../build/tello/tello.egg-info to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages/tello-0.0.0-py3.10.egg-info
+[0.964s] running install_scripts
+[0.979s] Installing connector script to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/tello
+[0.980s] Installing image_processor script to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/tello
+[0.980s] Installing movement script to /home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/tello
+[0.980s] writing list of installed files to '/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/install.log'
+[1.134s] Invoked command in '/home/mimi/Documents/GitHub/P4/ros2_ws/src/tello' returned '0': PYTHONPATH=/home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/prefix_override:/home/mimi/Documents/GitHub/P4/ros2_ws/install/tello/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/tello build --build-base /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/build install --record /home/mimi/Documents/GitHub/P4/ros2_ws/build/tello/install.log --single-version-externally-managed
